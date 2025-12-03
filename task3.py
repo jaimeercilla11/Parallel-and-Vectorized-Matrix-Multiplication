@@ -138,7 +138,7 @@ def generar_graficas(resultados_globales):
                 if nombre == alg:
                     sizes.append(n)
                     gflops.append(gf)
-                    
+
         if sizes:
             ax1.plot(sizes, gflops, marker='o', label=alg, linewidth=3,
                     color=colors.get(alg, 'gray'), markersize=10)
@@ -199,7 +199,6 @@ def main():
     print("• Processes: Avoids GIL but higher communication overhead")
     print("• Vectorization: Significant improvement over basic implementation\n")
     
-    # Generar gráficas
     generar_graficas(resultados_globales)
 
 if __name__ == "__main__":
