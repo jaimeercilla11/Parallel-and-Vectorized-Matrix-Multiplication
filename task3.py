@@ -138,6 +138,7 @@ def generar_graficas(resultados_globales):
                 if nombre == alg:
                     sizes.append(n)
                     gflops.append(gf)
+                    
         if sizes:
             ax1.plot(sizes, gflops, marker='o', label=alg, linewidth=3,
                     color=colors.get(alg, 'gray'), markersize=10)
