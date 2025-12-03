@@ -25,11 +25,9 @@ def mult_basica(A, B):
                 C[i, j] += A[i, k] * B[k, j]
     return C
 
-# 2. NumPy
 def mult_numpy(A, B):
     return np.dot(A, B)
 
-# 3. Vectorizado
 def mult_vectorizada(A, B):
     m, p = A.shape[0], B.shape[1]
     C = np.zeros((m, p))
@@ -37,7 +35,6 @@ def mult_vectorizada(A, B):
         C[i, :] = np.sum(A[i, :, np.newaxis] * B, axis=0)
     return C
 
-# 4. Threads
 def mult_fila(args):
     i, A_fila, B, p, n = args
     resultado = np.zeros(p)
@@ -57,7 +54,6 @@ def mult_threads(A, B, num_threads=None):
             C[i, :] = fila
     return C
 
-# 5. Procesos
 def mult_bloque_proc(args):
     inicio, fin, A_bloque, B = args
     m, n, p = fin - inicio, A_bloque.shape[1], B.shape[1]
@@ -84,7 +80,6 @@ def mult_procesos(A, B, num_proc=None):
             C[inicio:inicio + bloque.shape[0], :] = bloque
     return C
 
-# 6. Tiling
 def mult_tiling(A, B, tam_bloque=64):
     m, n, p = A.shape[0], A.shape[1], B.shape[1]
     C = np.zeros((m, p))
@@ -98,7 +93,6 @@ def mult_tiling(A, B, tam_bloque=64):
                             C[i, j] += A[i, k] * B[k, j]
     return C
 
-# 7. Paralelo + NumPy
 def mult_bloque_numpy(args):
     inicio, fin, A_bloque, B = args
     return inicio, np.dot(A_bloque, B)
@@ -125,7 +119,6 @@ def ejecutar_pruebas(n):
     resultados = []
     num_cores = cpu_count()
     
-    # 1. Básico
     if n <= 512:
         print("[1/7] Básico...")
         _, t = medir_tiempo(mult_basica, A, B)
@@ -135,14 +128,12 @@ def ejecutar_pruebas(n):
         print("[1/7] Básico [Omitido]")
         t_ref = None
     
-    # 2. NumPy
     print("[2/7] NumPy...")
     _, t = medir_tiempo(mult_numpy, A, B)
     if not t_ref:
         t_ref = t
     resultados.append(("NumPy (BLAS/LAPACK)", t, t_ref/t, t_ref/t, 1, calcular_gflops(n, t)))
     
-    # 3. Vectorizado
     if n <= 1024:
         print("[3/7] Vectorizado...")
         _, t = medir_tiempo(mult_vectorizada, A, B)
@@ -150,7 +141,6 @@ def ejecutar_pruebas(n):
     else:
         print("[3/7] Vectorizado [Omitido]")
     
-    # 4. Threads
     print("[4/7] Threads...")
     for nt in [2, 4, num_cores]:
         if nt > num_cores:
@@ -158,7 +148,6 @@ def ejecutar_pruebas(n):
         _, t = medir_tiempo(mult_threads, A, B, nt)
         resultados.append((f"Paralelo Threads ({nt} threads)", t, t_ref/t, (t_ref/t)/nt, nt, calcular_gflops(n, t)))
     
-    # 5. Procesos
     print("[5/7] Procesos...")
     for np in [2, num_cores]:
         if np > num_cores:
@@ -166,7 +155,6 @@ def ejecutar_pruebas(n):
         _, t = medir_tiempo(mult_procesos, A, B, np)
         resultados.append((f"Paralelo Procesos ({np} procesos)", t, t_ref/t, (t_ref/t)/np, np, calcular_gflops(n, t)))
     
-    # 6. Tiling
     if n <= 512:
         print("[6/7] Tiling...")
         _, t = medir_tiempo(mult_tiling, A, B, 64)
@@ -174,12 +162,10 @@ def ejecutar_pruebas(n):
     else:
         print("[6/7] Tiling [Omitido]")
     
-    # 7. Paralelo + NumPy
     print("[7/7] Paralelo + NumPy...")
     _, t = medir_tiempo(mult_paralela_numpy, A, B, num_cores)
     resultados.append((f"Paralelo + NumPy ({num_cores} procesos)", t, t_ref/t, (t_ref/t)/num_cores, num_cores, calcular_gflops(n, t)))
     
-    # Mostrar resultados
     print(f"\n{'='*90}\nRESULTADOS\n{'='*90}")
     print(f"{'Algoritmo':<35} {'Tiempo (s)':>12} {'Speedup':>10} {'Eficiencia':>12} {'Threads':>8} {'GFLOPS':>10}")
     print("-"*90)
