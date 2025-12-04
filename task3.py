@@ -116,21 +116,9 @@ def ejecutar_pruebas(n, resultados_globales):
 def generar_graficas(resultados_globales):
     print(f"\n{'='*80}\nGENERATING GRAPHS...\n{'='*80}")
     
-    plt.style.use('seaborn-v0_8-darkgrid')
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5))
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4))
     
-    colors = {
-        'Basic': '#1f77b4',
-        'NumPy': '#ff7f0e',
-        'Vectorized': '#2ca02c',
-        'Threads-2': '#d62728',
-        'Threads-4': '#9467bd',
-        'Threads-8': '#8c564b',
-        'Processes-2': '#e377c2',
-        'Processes-8': '#7f7f7f'
-    }
-    
-    for alg in ['NumPy', 'Threads-4', 'Threads-8', 'Processes-8']:
+    for alg in ['NumPy', 'Threads-8']:
         sizes = []
         gflops = []
         for n in sorted(resultados_globales.keys()):
@@ -138,47 +126,34 @@ def generar_graficas(resultados_globales):
                 if nombre == alg:
                     sizes.append(n)
                     gflops.append(gf)
-
         if sizes:
-            ax1.plot(sizes, gflops, marker='o', label=alg, linewidth=3,
-                    color=colors.get(alg, 'gray'), markersize=10)
-    ax1.set_xlabel('Matrix Size', fontsize=13, fontweight='bold')
-    ax1.set_ylabel('GFLOPS', fontsize=13, fontweight='bold')
-    ax1.set_title('Performance (GFLOPS) vs Matrix Size', fontsize=15, fontweight='bold')
-    ax1.legend(fontsize=11, loc='best')
+            ax1.plot(sizes, gflops, marker='o', label=alg, linewidth=2, markersize=8)
+    
+    ax1.set_xlabel('Matrix Size')
+    ax1.set_ylabel('GFLOPS')
+    ax1.set_title('Performance vs Matrix Size')
+    ax1.legend()
     ax1.grid(True, alpha=0.3)
-    ax1.set_xticks(sorted(resultados_globales.keys()))
     
     n_medio = 512
     if n_medio in resultados_globales:
         workers_t = []
         speedup_t = []
-        workers_p = []
-        speedup_p = []
         for nombre, _, speedup, _, workers, _ in resultados_globales[n_medio]:
             if 'Threads' in nombre:
                 workers_t.append(workers)
                 speedup_t.append(speedup)
-            elif 'Processes' in nombre:
-                workers_p.append(workers)
-                speedup_p.append(speedup)
         
-        ax2.plot(workers_t, speedup_t, marker='o', label='Threads', 
-                linewidth=3, markersize=10, color='#d62728')
-        ax2.plot(workers_p, speedup_p, marker='s', label='Processes', 
-                linewidth=3, markersize=10, color='#e377c2')
-
-        max_workers = max(max(workers_t), max(workers_p))
-        ax2.plot([1, max_workers], [1, max_workers], '--', color='gray', 
-                label='Ideal Speedup', alpha=0.7, linewidth=2)
-        ax2.set_xlabel('Number of Workers', fontsize=13, fontweight='bold')
-        ax2.set_ylabel('Speedup', fontsize=13, fontweight='bold')
-        ax2.set_title(f'Speedup Scaling (512×512 matrices)', fontsize=15, fontweight='bold')
-        ax2.legend(fontsize=11, loc='best')
+        ax2.plot(workers_t, speedup_t, marker='o', label='Threads', linewidth=2, markersize=8)
+        ax2.plot([1, max(workers_t)], [1, max(workers_t)], '--', color='gray', label='Ideal', alpha=0.5)
+        ax2.set_xlabel('Workers')
+        ax2.set_ylabel('Speedup')
+        ax2.set_title('Speedup vs Workers (512×512)')
+        ax2.legend()
         ax2.grid(True, alpha=0.3)
     
     plt.tight_layout()
-    plt.savefig('matrix_multiplication_analysis.png', dpi=300, bbox_inches='tight')
+    plt.savefig('matrix_multiplication_analysis.png', dpi=150, bbox_inches='tight')
     print("Graph saved as 'matrix_multiplication_analysis.png'")
     plt.show()
 
@@ -187,7 +162,7 @@ def main():
     print(" MATRIX MULTIPLICATION - PARALLEL AND VECTORIZED ANALYSIS")
     print("="*80)
     print(f"\nAvailable CPUs: {cpu_count()}")
-    
+    #eeeee
     resultados_globales = {}
     
     for n in [256, 512, 1024]:
