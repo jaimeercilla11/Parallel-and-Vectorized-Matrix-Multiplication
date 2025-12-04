@@ -162,7 +162,7 @@ def main():
     print(" MATRIX MULTIPLICATION - PARALLEL AND VECTORIZED ANALYSIS")
     print("="*80)
     print(f"\nAvailable CPUs: {cpu_count()}")
-    #eeeee
+    
     resultados_globales = {}
     
     for n in [256, 512, 1024]:
