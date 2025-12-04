@@ -116,8 +116,7 @@ def ejecutar_pruebas(n, resultados_globales):
 def generar_graficas(resultados_globales):
     print(f"\n{'='*80}\nGENERATING GRAPHS...\n{'='*80}")
     
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4))
-    
+    plt.figure(figsize=(6, 4))
     for alg in ['NumPy', 'Threads-8']:
         sizes = []
         gflops = []
@@ -127,16 +126,21 @@ def generar_graficas(resultados_globales):
                     sizes.append(n)
                     gflops.append(gf)
         if sizes:
-            ax1.plot(sizes, gflops, marker='o', label=alg, linewidth=2, markersize=8)
+            plt.plot(sizes, gflops, marker='o', label=alg, linewidth=2, markersize=8)
     
-    ax1.set_xlabel('Matrix Size')
-    ax1.set_ylabel('GFLOPS')
-    ax1.set_title('Performance vs Matrix Size')
-    ax1.legend()
-    ax1.grid(True, alpha=0.3)
+    plt.xlabel('Matrix Size')
+    plt.ylabel('GFLOPS')
+    plt.title('Performance vs Matrix Size')
+    plt.legend()
+    plt.grid(True, alpha=0.3)
+    plt.tight_layout()
+    plt.savefig('performance_gflops.png', dpi=150, bbox_inches='tight')
+    print("Graph 1 saved as 'performance_gflops.png'")
+    plt.close()
     
     n_medio = 512
     if n_medio in resultados_globales:
+        plt.figure(figsize=(6, 4))
         workers_t = []
         speedup_t = []
         for nombre, _, speedup, _, workers, _ in resultados_globales[n_medio]:
@@ -144,18 +148,19 @@ def generar_graficas(resultados_globales):
                 workers_t.append(workers)
                 speedup_t.append(speedup)
         
-        ax2.plot(workers_t, speedup_t, marker='o', label='Threads', linewidth=2, markersize=8)
-        ax2.plot([1, max(workers_t)], [1, max(workers_t)], '--', color='gray', label='Ideal', alpha=0.5)
-        ax2.set_xlabel('Workers')
-        ax2.set_ylabel('Speedup')
-        ax2.set_title('Speedup vs Workers (512×512)')
-        ax2.legend()
-        ax2.grid(True, alpha=0.3)
+        plt.plot(workers_t, speedup_t, marker='o', label='Threads', linewidth=2, markersize=8)
+        plt.plot([1, max(workers_t)], [1, max(workers_t)], '--', color='gray', label='Ideal', alpha=0.5)
+        plt.xlabel('Workers')
+        plt.ylabel('Speedup')
+        plt.title('Speedup vs Workers (512×512)')
+        plt.legend()
+        plt.grid(True, alpha=0.3)
+        plt.tight_layout()
+        plt.savefig('speedup_scaling.png', dpi=150, bbox_inches='tight')
+        print("Graph 2 saved as 'speedup_scaling.png'")
+        plt.close()
     
-    plt.tight_layout()
-    plt.savefig('matrix_multiplication_analysis.png', dpi=150, bbox_inches='tight')
-    print("Graph saved as 'matrix_multiplication_analysis.png'")
-    plt.show()
+    print("All graphs generated successfully!")
 
 def main():
     print("="*80)
